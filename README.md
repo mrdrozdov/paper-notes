@@ -1,0 +1,2 @@
+- Xi Chen, Yan Duan, Rein Houthooft, John Schulman, Ilya Sutskever, Pieter Abbeel. June 2016. InfoGAN: Interpretable Representation Learning by Information Maximizing Generative Adversarial Nets. (#nips2016, [paper](https://arxiv.org/abs/1606.03657))
+- Scott Reed, Zeynep Akata, Xinchen Yan, Lajanugen Logeswaran, Bernt Schiele, Honglak Lee. June 2016. Generative Adversarial Text to Image Synthesis. (#icml2016, [paper](https://arxiv.org/abs/1605.05396))

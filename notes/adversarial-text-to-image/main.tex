@@ -1,0 +1,279 @@
+\documentclass{beamer}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{default} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+
+\title[Text to Image Synthesis]{Text to Image Synthesis}
+\author{Andrew Drozdov}
+\institute{NYU Department of Computer Science}
+\date{August 8, 2017}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Uncomment these lines for an automatically generated outline.
+%\begin{frame}{Outline}
+%  \tableofcontents
+%\end{frame}
+
+
+%%%%%%%%%%%%%%
+% Section: Overview   %
+%%%%%%%%%%%%%%
+\section{Overview}
+\begin{frame}{}
+\centering
+Overview
+\end{frame}
+
+
+% TODO: Maybe want to cover image-to-text first?
+% Summary Header
+\begin{frame}{Paper Summary: Reed et al., 2016}
+\centering
+\includegraphics[width=10cm]{img/reed/header.png}
+\vskip 0.1cm
+\includegraphics[width=5cm]{img/reed/figure1.png}
+\end{frame}
+
+
+% What is the meaning of meaning?
+\begin{frame}{What is the problem?}
+\centering
+\includegraphics[width=10cm]{img/reed/problem.png}
+\end{frame}
+
+
+% What is the solution?
+\begin{frame}{What is the solution?}
+\begin{block}{Just GAN it!}
+Thank you Goodfellow et al., 2014.
+\end{block}
+\end{frame}
+
+
+% TODO: Maybe we want to explain the problem more before delving into GANs?
+% What is a GAN?
+\begin{frame}{Generative Adversarial Networks (GANs)}
+Play this minimax game until reaching a Nash equilibrium:
+\vskip0.5cm
+\centering
+\includegraphics[width=10cm]{img/reed/gan_eq.png}
+\end{frame}
+
+
+% TODO: Compare to Karpathy approach (or to Elman approach)?
+% What is a CNN+RNN?
+\begin{frame}{Label image with a class and text description}
+
+\begin{center}
+\includegraphics[width=10cm]{img/reed/joint.png}
+\end{center}
+
+\begin{itemize}
+\item $v_n$ - image
+\item $y_n$ - image class
+\item $t_n$ - image description
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=10cm]{img/reed/classifiers.png}
+\end{center}
+
+\begin{itemize}
+\item $\phi$ - image encoder
+\item $\psi$ - text encoder
+\item $f_v$ - image classifier
+\item $f_t$ - text classifier
+
+\end{itemize}
+\end{frame}
+
+
+% Discuss Architecture Layer
+\begin{frame}{Deep Convolutional GAN (DC-GAN)}
+\begin{block}{Architecture}
+We will cover the architecture later.
+\end{block}
+\end{frame}
+
+
+%%%%%%%%%%%%%
+% Section: Training  %
+%%%%%%%%%%%%%
+\section{Training}
+\begin{frame}{}
+\centering
+Training
+\end{frame}
+
+
+% Joint Conditioning Problem
+\begin{frame}{Joint Conditioning of Image and Description}
+There might be a problem. (Gauthier, 2015)
+\vskip 0.5cm
+
+What we have:
+\begin{itemize}
+\item Real Image + Matching Description
+\item Fake Image + Arbitrary Description (Matching or Not Matching)
+\end{itemize}
+\vskip 0.5cm
+
+What we may need:
+\begin{itemize}
+\item Real Image + Not Matching Description
+\end{itemize}
+\end{frame}
+
+
+% Embedding Interpolation
+\begin{frame}{Data Augmentation?}
+Problem: There are few text descriptions.
+\vskip 0.5cm
+
+Solution: Create additional \textit{text embeddings} (using interpolation between existing embeddings).
+\vskip 0.5cm
+
+Assumption: ``interpolations between embedding pairs tend to be near the data manifold'' (Bengio et al., 2013; Reed et al., 2014)
+\vskip 0.5cm
+
+\centering
+\includegraphics[width=10cm]{img/reed/interpolation.png}
+
+\end{frame}
+
+
+% Style Transfer
+\begin{frame}{Style Transfer}
+The text encodes the content; the image encodes the style. \\
+The text is easy to manipulate; the image not so.
+\vskip 0.5cm
+
+\begin{block}{Convolutional Style Network:}
+$$S: R^D \rightarrow R^Z$$
+\end{block}
+\vskip 0.5cm
+
+\begin{block}{Style Loss:}
+\centering
+\includegraphics[width=10cm]{img/reed/style_loss.png}
+\end{block}
+\vskip 0.5cm
+
+\begin{block}{Style Transfer:}
+\centering
+\includegraphics[width=10cm]{img/reed/style_transfer.png}
+\end{block}
+
+\end{frame}
+
+% Style Transfer
+\begin{frame}{Modely Summary}
+\begin{itemize}
+\item GAN
+\item GAN-CLS
+\item GAN-INT
+\item GAN-INT-CLS
+\item Style Transfer
+
+\end{itemize}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%
+% Section: Results   %
+%%%%%%%%%%%%%
+\section{Results}
+\begin{frame}{}
+\centering
+Results
+\end{frame}
+
+
+% Data
+\begin{frame}{Datasets}
+
+\begin{itemize} % start
+\item Birds - CUB dataset
+\begin{itemize}
+\item 11,788 images
+\item 200 categories
+\item 150 train+val classes
+\item 50 test classes
+\end{itemize}
+
+\item Flowers - Oxford-102 dataset
+\begin{itemize}
+\item 8,189 images
+\item 102 categories
+\item 82 train+val classes
+\item 20 test classes
+\end{itemize}
+
+\item 5 captions per image
+\item Augment images with random transformation: scale, crop, etc.
+
+\end{itemize} % end
+
+\end{frame}
+
+
+% Zero-Shot Birds
+\begin{frame}{Zero Shot: Birds}
+\centering
+\includegraphics[width=10cm]{img/reed/zero_shot_birds.png}
+\end{frame}
+
+
+% Zero-Shot Flowers
+\begin{frame}{Zero Shot: Flowers}
+\centering
+\includegraphics[width=10cm]{img/reed/zero_shot_flowers.png}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%
+% Section: Discussion   %
+%%%%%%%%%%%%%%%
+\section{Discussion}
+\begin{frame}{}
+\centering
+Discussion
+\end{frame}
+
+
+% Question: What is an image from a text perspective?
+\begin{frame}{Question for the Audience}
+What is the closest representation to an image, in pure 100\% text?
+\vskip 0.5cm
+
+\begin{block}{Followup}
+\begin{itemize}
+\item Can we do text to image synthesis without $z$?
+\item Can we do text to image synthesis with longer descriptions?
+\item Can we do text to text synthesis (inverse summarization)?
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+\end{document}
