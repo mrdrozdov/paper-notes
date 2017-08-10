@@ -61,27 +61,39 @@ Overview
 \end{frame}
 
 
-% What is the solution?
-\begin{frame}{What is the solution?}
-\begin{block}{Just GAN it!}
-Thank you Goodfellow et al., 2014.
-\end{block}
+%%%%%%%%%%%%%%
+% Section: Background   %
+%%%%%%%%%%%%%%
+\section{Background}
+\begin{frame}{}
+\centering
+Background
 \end{frame}
 
 
-% TODO: Maybe we want to explain the problem more before delving into GANs?
-% What is a GAN?
-\begin{frame}{Generative Adversarial Networks (GANs)}
+% What is the solution?
+\begin{frame}{Generative Adversarial Networks (Goodfellow et al. 2014)}
 Play this minimax game until reaching a Nash equilibrium:
 \vskip0.5cm
 \centering
 \includegraphics[width=10cm]{img/reed/gan_eq.png}
+
+\begin{minipage}{0.48\textwidth}
+\includegraphics[width=1.0\linewidth]{img/reed/imagenet_cnn.png}
+\end{minipage}
+(Krizhevsky et al. 2012)
+\hfill
+\begin{minipage}{0.48\textwidth}
+\includegraphics[width=1.0\linewidth]{img/reed/dcgan.png}
+\end{minipage}
+(Radford et al. 2015)
+
 \end{frame}
 
 
 % TODO: Compare to Karpathy approach (or to Elman approach)?
 % What is a CNN+RNN?
-\begin{frame}{Label image with a class and text description}
+\begin{frame}{Joint Embedding (Reed et al. 2016)}
 
 \begin{center}
 \includegraphics[width=10cm]{img/reed/joint.png}
@@ -107,27 +119,27 @@ Play this minimax game until reaching a Nash equilibrium:
 \end{frame}
 
 
-% Discuss Architecture Layer
-\begin{frame}{Deep Convolutional GAN (DC-GAN)}
-\begin{block}{Architecture}
-We will cover the architecture later.
-\end{block}
+%%%%%%%%%%%%%
+% Section: Method  %
+%%%%%%%%%%%%%
+\section{Method}
+\begin{frame}{}
+\centering
+Method
 \end{frame}
 
 
-%%%%%%%%%%%%%
-% Section: Training  %
-%%%%%%%%%%%%%
-\section{Training}
-\begin{frame}{}
-\centering
-Training
+% Model
+\begin{frame}{Model}
+
+\includegraphics[width=1.0\linewidth]{img/reed/model.png}
+
 \end{frame}
 
 
 % Joint Conditioning Problem
-\begin{frame}{Joint Conditioning of Image and Description}
-There might be a problem. (Gauthier, 2015)
+\begin{frame}{Joint Conditioning of Image and Description (GAN-CLS)}
+Easily discriminate early in training but later...
 \vskip 0.5cm
 
 What we have:
@@ -139,17 +151,14 @@ What we have:
 
 What we may need:
 \begin{itemize}
-\item Real Image + Not Matching Description
+\item Real Image + Not Matching Description (Learn to match)
 \end{itemize}
 \end{frame}
 
 
 % Embedding Interpolation
-\begin{frame}{Data Augmentation?}
-Problem: There are few text descriptions.
-\vskip 0.5cm
-
-Solution: Create additional \textit{text embeddings} (using interpolation between existing embeddings).
+\begin{frame}{Data Augmentation by Interpolation (GAN-INT)}
+Create additional \textit{text embeddings} (using interpolation between existing embeddings).
 \vskip 0.5cm
 
 Assumption: ``interpolations between embedding pairs tend to be near the data manifold'' (Bengio et al., 2013; Reed et al., 2014)
@@ -182,19 +191,6 @@ $$S: R^D \rightarrow R^Z$$
 \centering
 \includegraphics[width=10cm]{img/reed/style_transfer.png}
 \end{block}
-
-\end{frame}
-
-% Style Transfer
-\begin{frame}{Modely Summary}
-\begin{itemize}
-\item GAN
-\item GAN-CLS
-\item GAN-INT
-\item GAN-INT-CLS
-\item Style Transfer
-
-\end{itemize}
 
 \end{frame}
 
@@ -237,6 +233,18 @@ Results
 \end{frame}
 
 
+% Model Summary
+\begin{frame}{Model Summary}
+\begin{itemize}
+\item GAN
+\item GAN-CLS (real image, fake label)
+\item GAN-INT (text interpolation)
+\item GAN-INT-CLS
+\item Style Transfer
+\end{itemize}
+\end{frame}
+
+
 % Zero-Shot Birds
 \begin{frame}{Zero Shot: Birds}
 \centering
@@ -248,6 +256,40 @@ Results
 \begin{frame}{Zero Shot: Flowers}
 \centering
 \includegraphics[width=10cm]{img/reed/zero_shot_flowers.png}
+\end{frame}
+
+
+% Style Transfer
+\begin{frame}{Style Transfer: Birds}
+\begin{itemize}
+\item 100 Clusters (K-means)
+\item Background: RGB
+\item Pose: 6 keypoint coordinates (beak, belly, breast, crown, forehead, and tail)
+\end{itemize}
+
+\centering
+\includegraphics[width=1.0\linewidth]{img/reed/style_roc.png}
+\end{frame}
+
+
+% Style Transfer
+\begin{frame}{Style Transfer: Birds}
+\centering
+\includegraphics[width=9cm]{img/reed/style_examples.png}
+\end{frame}
+
+
+% Text Interpolation
+\begin{frame}{Text Interpolation}
+\centering
+\includegraphics[width=9cm]{img/reed/result_text_int.png}
+\end{frame}
+
+
+% Beyond birds and flowers
+\begin{frame}{Beyond birds and flowers}
+\centering
+\includegraphics[width=9cm]{img/reed/result_beyond.png}
 \end{frame}
 
 
@@ -275,5 +317,42 @@ What is the closest representation to an image, in pure 100\% text?
 \end{block}
 
 \end{frame}
+
+
+%%%%%%%%%%%%%%%
+% Section: References   %
+%%%%%%%%%%%%%%%
+\section{References}
+\begin{frame}{References}
+\begin{enumerate}
+\item[1] Goodfellow, Ian, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville, and Yoshua Bengio. "Generative adversarial nets." Advances in neural information processing systems. 2014.
+
+\item[2] Krizhevsky, Alex, Ilya Sutskever, and Geoffrey E. Hinton. "Imagenet classification with deep convolutional neural networks." Advances in neural information processing systems. 2012.
+
+\item[3] Radford, Alec, Luke Metz, and Soumith Chintala. "Unsupervised representation learning with deep convolutional generative adversarial networks." arXiv preprint arXiv:1511.06434 (2015). (ICLR 2016)
+\end{enumerate}
+\end{frame}
+
+%
+\begin{frame}{References}
+\begin{enumerate}
+\item[4] Reed, S., Akata, Z., Lee, H., and Schiele, B. Learning deep representations for fine-grained visual descriptions. In CVPR, 2016.
+
+\item[5] Gauthier, J. Conditional generative adversarial nets for convolutional face generation. Technical report, 2015.
+
+\item[6] Bengio, Y., Mesnil, G., Dauphin, Y., and Rifai, S. Better mixing via deep representations. In ICML, 2013.
+\end{enumerate}
+\end{frame}
+
+%
+\begin{frame}{References}
+\begin{enumerate}
+\item[7] Reed, S., Akata, Z., Lee, H., and Schiele, B. Learning deep representations for fine-grained visual descriptions. In CVPR, 2016.
+
+\item[8] Reed, S., Sohn, K., Zhang, Y., and Lee, H. Learning to disentangle factors of variation with manifold interaction. In ICML, 2014.
+\end{enumerate}
+\end{frame}
+
+
 
 \end{document}
