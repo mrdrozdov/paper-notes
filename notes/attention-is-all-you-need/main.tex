@@ -1,0 +1,177 @@
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice. 
+
+\documentclass{beamer}
+
+% There are many different themes available for Beamer. A comprehensive
+% list with examples is given here:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+% You can uncomment the themes below if you would like to use a different
+% one:
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+%\usetheme{boxes}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{default}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}
+\usepackage{setspace}
+
+\usepackage{listings}
+\usepackage{color}
+
+\title[AIAYN]{Attention is All You Need}
+
+\author{Andrew Drozdov}
+
+% Let's get started
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{What?}{}
+Transformer Network
+\end{frame}
+
+\begin{frame}{Why? (Architecture Perspective)}{}
+\begin{itemize}
+\item Many NLP tasks have SotA set by LSTM or GRU, models with sequential dependencies making them difficult to paralellize.
+
+\item There are other popular architectures lately:
+\begin{itemize}
+\item QRNN / SRU
+\item CNN
+\end{itemize}
+\item[] But they still usually have some sequential dependencies.
+
+\item The model in AIAYN has no sequential dependencies.
+
+\item Attention-only model does exist, but not for decoding.
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Why? (Performance Perspective)}{}
+\begin{itemize}
+\item Transformer Network can be used for many tasks:
+\begin{itemize}
+\item WMT 14 (En to Ge). 28.4 BLEU (+2)
+\item WMT 14 (En to Fr). 41.0 BLEU (single model, fast/easy to train)
+\item Constituency Parsing
+\end{itemize}
+
+\item[] Some of these numbers are more impressive than seen in some similar papers.
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Background (RNNs)}{}
+\url{http://karpathy.github.io/2015/05/21/rnn-effectiveness/}
+\end{frame}
+
+\begin{frame}{Background (LSTM/GRU and motivation for QRNN)}{}
+Equations...
+\end{frame}
+
+\begin{frame}{Model: Transform Network (Encoder)}{}
+Image
+% multi-head self-attention
+% FFN
+\end{frame}
+
+\begin{frame}{Model: Transform Network (Decoder)}{}
+Image
+% multi-head self-attention
+% FFN
+\end{frame}
+
+\begin{frame}[fragile]{Scaled Dot-Product Attention}{}
+Divide by the square root of the output dimension to increase the signal from training.
+
+This equation is the same as Softmax plus Temperature. The temperature will always be positive and greater than one, so it will in effect increase the entropy of the probabilities, bringing them closer to uniform.
+\end{frame}
+
+\begin{frame}[fragile]{Dot Product}
+
+Serial.
+
+\begin{verbatim}
+for query in queries:
+  attn = query.view(1, D) * keys.view(K, D)
+  attn = attn.sum(1) / scale
+  attn = softmax(attn)
+\end{verbatim}
+
+Parallel.
+
+\begin{verbatim}
+attn = queries.repeat(1, K).view(Q * K, D) * keys.repeat(Q, 1)
+attn = attn.sum(1) / scale
+attn = softmax(attn)
+\end{verbatim}
+
+Parallel with broadcasting.
+
+\begin{verbatim}
+attn = querys.view(Q, 1, D) * keys.view(1, K, D)
+attn = attn.view(Q * K, D).sum(1) /  / scale
+attn = softmax(attn)
+\end{verbatim}
+\end{frame}
+
+\begin{frame}{Multi-Head Attention}{}
+Perform attention multiple times (almost like an attention ``kernel'').
+\end{frame}
+
+\begin{frame}{Positional Embeddings}{}
+Something similar is done in the Intra-Attention for NLI paper.
+\end{frame}
+
+\begin{frame}{Intelligent Batching}{}
+``Sentence pairs were batched together by approximate sequence length.''
+
+This could mean that all source match and all target match, or that the length of the pair match.
+\end{frame}
+
+\begin{frame}{WMT 14}{}
+Training Time: ``We estimate the number of floating point operations used to train a model by multiplying the training time, the number of GPUs used, and an estimate of the sustained single-precision floating-point capacity of each GPU.''
+\end{frame}
+
+
+\end{document}
+
+
