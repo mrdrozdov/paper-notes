@@ -5,3 +5,5 @@
 *.gz
 *.snm
 *.toc
+*.vrb
+papers
