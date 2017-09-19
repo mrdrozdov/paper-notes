@@ -59,22 +59,28 @@
 % Let's get started
 \begin{document}
 
+% Title
 \begin{frame}
   \titlepage
 \end{frame}
+%
 
+% What?
 \begin{frame}{What?}{}
-Transformer Network
+\centering
+\includegraphics[width=0.5\textwidth]{img/transformer.png}
 \end{frame}
+%
 
+% Why? (Architecture Perspective)
 \begin{frame}{Why? (Architecture Perspective)}{}
 \begin{itemize}
 \item Many NLP tasks have SotA set by LSTM or GRU, models with sequential dependencies making them difficult to paralellize.
 
 \item There are other popular architectures lately:
 \begin{itemize}
-\item QRNN / SRU
-\item CNN
+\item QRNN \footnote[frame]{\url{https://www.salesforce.com/products/einstein/ai-research/neural-network-building-block-accurate-understanding/}} / SRU \footnote[frame]{\url{https://github.com/taolei87/sru}}
+\item CNN  \footnote[frame]{\url{https://github.com/facebookresearch/fairseq}}
 \end{itemize}
 \item[] But they still usually have some sequential dependencies.
 
@@ -84,7 +90,9 @@ Transformer Network
 
 \end{itemize}
 \end{frame}
+%
 
+% Why? (Performance Perspective)
 \begin{frame}{Why? (Performance Perspective)}{}
 \begin{itemize}
 \item Transformer Network can be used for many tasks:
@@ -98,34 +106,75 @@ Transformer Network
 
 \end{itemize}
 \end{frame}
+%
 
+% Background (RNNs)
 \begin{frame}{Background (RNNs)}{}
+\centering
+\includegraphics[width=0.9\textwidth]{img/karpathy.png}
+
+\hfill
+
 \url{http://karpathy.github.io/2015/05/21/rnn-effectiveness/}
 \end{frame}
+%
 
 \begin{frame}{Background (LSTM/GRU and motivation for QRNN)}{}
-Equations...
+\begin{itemize}
+\item Hochreiter and Schmidhuber. 1997. LSTM.
+\item Cho et al. 2014. GRU.
+\end{itemize}
+
+\begin{columns}[T] % align columns
+\begin{column}{.48\textwidth}
+\centering
+\includegraphics[width=\textwidth]{img/qrnn_perf.png}
+
+QRNN
+\end{column}%
+\hfill%
+\begin{column}{.48\textwidth}
+\begin{minipage}[c][.4\textheight][c]{\linewidth}
+\centering
+\includegraphics[width=\textwidth]{img/sru_perf.png}
+
+SRU
+\end{minipage}
+\end{column}%
+\end{columns}
+
 \end{frame}
 
-\begin{frame}{Model: Transform Network (Encoder)}{}
-Image
-% multi-head self-attention
-% FFN
+% Model: Transform Network (Encoder and Decoder)
+\begin{frame}{Model: Transform Network (Encoder and Decoder)}{}
+\centering
+\includegraphics[width=0.5\textwidth]{img/transformer.png}
 \end{frame}
+%
 
-\begin{frame}{Model: Transform Network (Decoder)}{}
-Image
-% multi-head self-attention
-% FFN
-\end{frame}
-
+% Scaled Dot-Product Attention
 \begin{frame}[fragile]{Scaled Dot-Product Attention}{}
-Divide by the square root of the output dimension to increase the signal from training.
+\begin{columns}[T] % align columns
+\begin{column}{.48\textwidth}
+\centering
+\includegraphics[width=\textwidth]{img/attn_fig.png}
+\end{column}%
+\hfill%
+\begin{column}{.48\textwidth}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\includegraphics[width=\textwidth]{img/attn_eq.png}
+\end{minipage}
+\end{column}%
+\end{columns}
 
-This equation is the same as Softmax plus Temperature. The temperature will always be positive and greater than one, so it will in effect increase the entropy of the probabilities, bringing them closer to uniform.
+\begin{itemize}
+\item Scaling is the same as Softmax plus Temperature. Higher Temperature brings probabilities closer to uniform.
+\end{itemize}
 \end{frame}
+%
 
-\begin{frame}[fragile]{Dot Product}
+% Scaled Dot-Product Attention (Pytorch)
+\begin{frame}[fragile]{Scaled Dot-Product Attention (Pytorch)}
 
 Serial.
 
@@ -148,29 +197,111 @@ Parallel with broadcasting.
 
 \begin{verbatim}
 attn = querys.view(Q, 1, D) * keys.view(1, K, D)
-attn = attn.view(Q * K, D).sum(1) /  / scale
+attn = attn.view(Q * K, D).sum(1) / scale
 attn = softmax(attn)
 \end{verbatim}
 \end{frame}
+%
 
+% Multi-Head Attention
 \begin{frame}{Multi-Head Attention}{}
-Perform attention multiple times (almost like an attention ``kernel'').
+\centering
+\begin{columns}[T] % align columns
+\begin{column}{.38\textwidth}
+\centering
+\includegraphics[width=0.6\textwidth]{img/multi_attn_fig.png}
+\end{column}%
+\hfill%
+\begin{column}{.58\textwidth}
+\begin{minipage}[c][.4\textheight][c]{\linewidth}
+\includegraphics[width=\textwidth]{img/multi_attn_eq.png}
+\end{minipage}
+\end{column}%
+\end{columns}
+
+\includegraphics[width=\textwidth]{img/multi_attn_text.png}
+
+Perform attention multiple times (almost like a dynamic attention ``kernel'').
 \end{frame}
+%
 
-\begin{frame}{Positional Embeddings}{}
-Something similar is done in the Intra-Attention for NLI paper.
+% Other Tricks
+\begin{frame}{Other Tricks}{}
+\begin{enumerate}
+\item Masking in Softmax is done with $-\infty$.
+\item The parameters are shared between the embedding layers \textit{and the pre-softmax layer}.
+\item Positional encodings give a weak sense of ordering (similar was done in Parikh et al.).
+\end{enumerate}
+
+\begin{columns}[T] % align columns
+\begin{column}{.38\textwidth}
+\begin{minipage}[c][.4\textheight][c]{\linewidth}
+\includegraphics[width=\textwidth]{img/pos_emb.png}
+\end{minipage}
+\end{column}%
+\hfill%
+\begin{column}{.58\textwidth}
+\begin{minipage}[c][.4\textheight][c]{\linewidth}
+\includegraphics[width=\textwidth]{img/path_length.png}
+\end{minipage}
+\end{column}%
+\end{columns}
+
 \end{frame}
+%
 
-\begin{frame}{Intelligent Batching}{}
-``Sentence pairs were batched together by approximate sequence length.''
+% Training
+\begin{frame}{Training}{}
+\begin{itemize}
+\item WMT 14 (En to Ge). 4.5M pairs. BPE w. 37k vocab.
+\item WMT 14 (En to Fr). 36M pairs(?). Wordpiece w. 32k vocab. 
+\item Batch Size: 25k.
+\item 8 GPUs (x 3584 cores; 16GB; 720GBps)
+\item Small = 0.4s / step. 100k steps (12 hours). Big = 1s / step. 300k steps (3.5 days).
+\item Adam with learning rate warmup and decay.
+\item Regularization...
 
-This could mean that all source match and all target match, or that the length of the pair match.
+\end{itemize}
 \end{frame}
+%
 
-\begin{frame}{WMT 14}{}
-Training Time: ``We estimate the number of floating point operations used to train a model by multiplying the training time, the number of GPUs used, and an estimate of the sustained single-precision floating-point capacity of each GPU.''
+% Training (Regularization)
+\begin{frame}{Training (Regularization)}{}
+\begin{itemize}
+\item Residual Dropout
+\item Attention Dropout
+\item Label Smoothing
+\item Layer Normalization \footnote[frame]{\url{https://github.com/pytorch/pytorch/issues/1959}}\footnote[frame]{Ba, Kiros, Hinton. 2016. \url{https://arxiv.org/abs/1607.06450}}
+\end{itemize}
 \end{frame}
+%
 
+% Results
+\begin{frame}{Results: WMT}{}
+\centering
+\includegraphics[width=\linewidth]{img/wmt.png}
+\end{frame}
+%
+
+% Results
+\begin{frame}{Results: Variations}{}
+\centering
+\includegraphics[width=0.8\linewidth]{img/variations.png}
+\end{frame}
+%
+
+% Results
+\begin{frame}{Results: PTB}{}
+\centering
+\includegraphics[width=\linewidth]{img/wsj.png}
+\end{frame}
+%
+
+% Conclusion
+\begin{frame}{Conclusion}{}
+If you use the right tricks, you can get SotA and decrease your computational cost.
+\end{frame}
+%
 
 \end{document}
 
