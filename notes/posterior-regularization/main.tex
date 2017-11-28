@@ -90,7 +90,7 @@
 
 % https://arxiv.org/pdf/1601.04811.pdf
 % Every phrase should be covered in alignment.
-\item Coverage constraint.
+\item Example of prior knowledge: coverage constraint.
 
 \item Existing approaches are not scalable.
 \begin{itemize}
@@ -112,12 +112,19 @@ F(\theta, q) &= \lambda_1 \mathcal{L}(\theta) - \lambda_2 \Sigma_n  \min_{q \in 
 \end{align*}
 
 \item $\mathcal{Q}$ is a constrained posterior set.
+\begin{itemize}
+\item For instance, bijectivity and symmetry in machine translation.
+\end{itemize}
 
 \begin{align*}
 \mathcal{Q} &= \{ q(y) : \mathbb{E}_q[\phi(x, y)] \leq b\}
 \end{align*}
 
-\item The $q$ is on the left side of $KL$ because...
+\item Can be optimized using a simple EM scheme.
+
+\vspace{4mm}
+\centering
+\includegraphics[width=0.75\textheight]{em}
 
 \end{itemize}
 
@@ -163,11 +170,51 @@ Q(y|x^n; \gamma) &= \frac{\exp(\gamma \cdot \phi(x,y))}{\Sigma_{y'} \exp(\gamma 
 \begin{frame}{Training and Inference}{}
 \begin{itemize}
 \item During training, subsample predicted target sentences.
+\begin{center}\includegraphics[width=0.5\textheight]{subsample}
+\end{center}
+
+\item Normalize the sampled subspace.
+\begin{center}
+\begin{minipage}{.4\textwidth}
+\includegraphics[width=0.5\textheight]{subsampleq}
+\end{minipage}
+\begin{minipage}{.4\textwidth}
+\includegraphics[width=0.5\textheight]{sharpness}
+\end{minipage}
+\end{center}
+
 \item During inference, generate a candidate list using maximum likelihood only, then rerank by incorporating prior knowledge.
 
 \begin{align*}
 \hat{y} &= arg\max_{y \in \mathcal{C}(x)} \{ \log P(y|x;\theta) + \gamma \cdot \phi(x, y) \}
 \end{align*}
+
+\end{itemize}
+
+\end{frame}
+% SLIDE
+
+% SLIDE
+\begin{frame}{Experimental Setup}{}
+\begin{itemize}
+\item English-to-Chinese Translation.
+\item Train RNNSearch for 300k iterations (4 days). Train model of this work (3 days).
+
+\item RNNSearch
+\begin{itemize}
+\item Word Embedding: 620
+\item Hidden Layer: 1000
+\item Batch Size: 80
+\item AdaDelta
+\item Beam Size of 10 during decoding.
+\end{itemize}
+
+\item RNNSearch+ThisWork
+\begin{itemize}
+\item Batch Size: 1
+\item Candidates: 80 and $\alpha=0.2$
+\item $\lambda_1 = 8 \times 10^{-5}$, $\lambda_2 = 2.5 \times 10^{-4}$
+\end{itemize}
 
 \end{itemize}
 
@@ -186,6 +233,13 @@ Q(y|x^n; \gamma) &= \frac{\exp(\gamma \cdot \phi(x,y))}{\Sigma_{y'} \exp(\gamma 
 \begin{frame}{Ablation}{}
 \centering
 \includegraphics[width=\textheight]{ablation}
+\end{frame}
+% SLIDE
+
+% SLIDE
+\begin{frame}{Examples}{}
+\centering
+\includegraphics[height=0.8\textheight]{examples}
 \end{frame}
 % SLIDE
 
